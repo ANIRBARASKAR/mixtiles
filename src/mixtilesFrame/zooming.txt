@@ -1,0 +1,54 @@
+// EditPhotoComponent.jsx
+import React, { useState } from "react";
+
+const EditPhotoComponent = () => {
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  
+  return (
+    <div>
+      <div>
+        <div>
+          <div
+            style={{ width: "165.6px", height: "165.6px", marginTop: "10px" }}
+          >
+            <img
+              alt=""
+              src="https://res.cloudinary.com/mixtiles/image/fetch/f_auto,q_auto:good/https://mixtiles-uploads.s3.amazonaws.com/1397ff7a07b53b4d78eb616dfd5b015f_upload_web.jpg"
+              style={{
+                objectFit: "cover",
+                width: "200.6px",
+                transform: `translate(0px, -8.55875px) rotate(0deg) scale(${zoomLevel})`
+              }}
+            />
+          </div>
+          <br />
+
+          <div>
+            <div>
+              <div
+                style={{
+                  height: "130px"
+                }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div>
+          <input
+            type="range"
+            min="1"
+            max="1.1"
+            step="0.001"
+            value={zoomLevel}
+            onChange={(e) => setZoomLevel(e.target.value)}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EditPhotoComponent;

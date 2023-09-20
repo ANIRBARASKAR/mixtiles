@@ -1,0 +1,1171 @@
+import React, { useState, useEffect, useRef } from "react";
+
+export default function MixTiles6() {
+  // *** storing all div's & IMG data
+
+  const [allStyle, setallStyle] = useState([]);
+  const [selectedImage, setSelectedImage] = useState([]);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  // ************** basic states
+  const [showFrame, setShowFrame] = useState(true);
+  const [showFrameColor, setShowFrameColor] = useState("black");
+  const [filter_, setFilter] = useState("original");
+  const [mat, setmat] = useState(1);
+  const [bgColor, setbgColor] = useState("white");
+  // ************* Updating
+
+  const [updatingDataId, setupdatingDataId] = useState(null);
+
+  // *********** Default Values for main div
+  const boxShadow_ = 10;
+  const mainDivBorder = 20;
+  const mainDivHeight = 400;
+  const mainDivWidth = 400;
+  const zoomingMinValue = "1";
+  const zoomingMaxValue = "2.1";
+  const zoomingstepValue = "0.001";
+
+  // Initialize shadow width with a default value
+
+  // Generate the boxShadow property dynamically based on shadowWidth
+  const boxShadow = Array.from({ length: boxShadow_ }, (_, i) => {
+    const offsetX = i + 1;
+    const offsetY = i + 1;
+    return `${offsetX}px ${offsetY}px 1px 0px #6f706f`;
+  }).join(", ");
+
+  const boxShadow2 = Array.from({ length: boxShadow_ }, (_, i) => {
+    const offsetX = i + 1;
+    const offsetY = i + 1;
+    return `${offsetX}px ${offsetY}px 1px 0px #c6c7c5`;
+  }).join(", ");
+
+  const imgStyle = {
+    maxWidth: "100%",
+    height: "100%",
+    transform: `translate(0px, 0px) rotate(0deg) scale(${zoomLevel})`,
+  };
+  const anir = showFrameColor == "black" ? boxShadow2 : boxShadow;
+  const mainDivStyle = {
+    border: showFrame ? `${mainDivBorder}px solid ${showFrameColor}` : "",
+    width: `${mainDivWidth}px`,
+    height: `${mainDivHeight}px`,
+    backgroundColor: bgColor,
+
+    boxShadow: boxShadow,
+  };
+
+  const innerDivStyle = {
+    overflow: "hidden",
+    objectFit: "cover",
+    height: "100%",
+    // border: "2px solid green",
+    transform: `translate(0px,0px) scale(${mat})`,
+    transition: isDragging ? "none" : "transform 0.3s",
+    // position: "relative",
+  };
+
+  const [updatingDivStyle, setupdatingDivStyle] = useState({
+    border: showFrame ? `${mainDivBorder}px solid ${showFrameColor}` : "",
+    width: `${mainDivWidth}px`,
+    height: `${mainDivHeight}px`,
+    backgroundColor: `${bgColor}`,
+  });
+
+  const [updatingImgStyle, setupdatingImgStyle] = useState({
+    maxWidth: "100%",
+    height: "100%",
+    transform: `translate(0px, -0.0px) rotate(0deg) scale(${zoomLevel})`,
+    filter: "",
+  });
+
+  const [updateingInnerDivStyle, setupdateingInnerDivStyle] = useState({
+    transform: `scale(${mat})`,
+    overflow: "hidden",
+    objectFit: "cover",
+    height: "100%",
+  });
+
+  const handleImageChange = (e) => {
+    // ********** for upload Multiple Images
+
+    const files = e.target.files;
+
+    if (files) {
+      const imagesArray = Array.from(files).map((file) => {
+        setallStyle((pre) => [
+          ...pre,
+          {
+            divStyle: mainDivStyle,
+            imgStyle: imgStyle,
+            innerDivStyle: innerDivStyle,
+          },
+        ]);
+        return URL.createObjectURL(file);
+      });
+      setSelectedImage((prevImages) => [...prevImages, ...imagesArray]);
+    }
+  };
+
+  //   **************** data *****************//
+  const frame = [
+    {
+      name: "Frame",
+      status: true,
+    },
+    {
+      name: "Frameless",
+      status: false,
+    },
+  ];
+  const frameColor = [
+    {
+      name: "Frame Black",
+      color: "black",
+    },
+    {
+      name: "Frame White",
+      color: "#f7f7f7",
+    },
+  ];
+
+  const frameEffect = [
+    {
+      name: "Orignal",
+      type: "original",
+      value: "",
+    },
+    {
+      name: "Silver",
+      type: "silver",
+      value: "grayscale(100%) brightness(130%)",
+    },
+    {
+      name: "Noir",
+      type: "noir",
+      value: "grayscale(100%) contrast(150%)",
+    },
+    {
+      name: "Vivid",
+      type: "vivid",
+      value: "brightness(120%) contrast(120%) saturate(150%)",
+    },
+    {
+      name: "Dramatic",
+      type: "dramatic",
+      value: "brightness(90%) contrast(150%) sepia(100%)",
+    },
+  ];
+  const frameMat = [
+    {
+      name: "Mat 1",
+      size: 1.0,
+    },
+
+    {
+      name: "Mat 2",
+      size: 0.8,
+    },
+    {
+      name: "Mat 3",
+      size: 0.6,
+    },
+    {
+      name: "Mat 4",
+      size: 0.5,
+    },
+
+    {
+      name: "Mat 5",
+      size: 0.4,
+    },
+  ];
+
+  const frameBgColor = [
+    {
+      name: "Color 1",
+      color: "white",
+    },
+    {
+      name: "Color 2",
+      color: "hotpink",
+    },
+    {
+      name: "Color 3",
+      color: "yellow",
+    },
+    {
+      name: "Color 4",
+      color: "pink",
+    },
+    {
+      name: "Color 5",
+      color: "green",
+    },
+  ];
+
+  // ***** button's Model
+
+  const Buttons = ({ updating }) => {
+    return (
+      <>
+        <div className="col-sm-4">
+          {updating ? (
+            ""
+          ) : (
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+            />
+          )}
+
+          <br />
+          <Frame updating={updating} />
+          <FrameColor updating={updating} />
+          <FrameEffect updating={updating} />
+
+          <MatSizes updating={updating} />
+          <Colors updating={updating} />
+        </div>
+      </>
+    );
+  };
+
+  // ***** Frame
+  const Frame = ({ updating }) => {
+    const handleShowStatus = (arg) => {
+      allStyle.map((item, i) => {
+        // ***********  Updating
+        if (updating) {
+          if (arg.name == "Frame") {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              border: `${mainDivBorder}px solid ${showFrameColor}`,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              border: `0px solid green`,
+            }));
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          }
+        } else {
+          if (arg.name == "Frame") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    border: `${mainDivBorder}px solid ${showFrameColor}`,
+                  },
+                };
+              });
+            });
+          } else {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    border: `0px solid green`,
+                  },
+                };
+              });
+            });
+          }
+        }
+      });
+    };
+    return (
+      <>
+        <div className="my-2">
+          {frame.map((item) => (
+            <button
+              className="btn btn-dark mx-2"
+              onClick={() => handleShowStatus(item)}
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  };
+
+  // **** Frame Color
+  const FrameColor = ({ updating }) => {
+    const handleFrameColor = (arg) => {
+      allStyle.map((item, i) => {
+        if (updating) {
+          if (arg.color == "black") {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              border: `${mainDivBorder}px solid ${arg.color}`,
+              boxShadow: boxShadow,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              border: `${mainDivBorder}px solid ${arg.color}`,
+              boxShadow: boxShadow2,
+            }));
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          }
+        } else {
+          if (arg.color == "black") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    border: `${mainDivBorder}px solid ${arg.color}`,
+                    boxShadow: boxShadow,
+                  },
+                };
+              });
+            });
+          } else {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    border: `${mainDivBorder}px solid ${arg.color}`,
+                    boxShadow: boxShadow2,
+                  },
+                };
+              });
+            });
+          }
+        }
+      });
+    };
+    return (
+      <>
+        <div className="my-2">
+          {frameColor.map((item) => (
+            <button
+              className="btn btn-dark mx-2"
+              onClick={() => handleFrameColor(item)}
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  };
+
+  // ***** FrameEffect
+  const FrameEffect = ({ updating }) => {
+    const handleFrameEffect = (arg) => {
+      allStyle.map((item, i) => {
+        if (updating) {
+          if (arg.type == "original") {
+            setupdatingImgStyle((prevStyle) => ({
+              ...prevStyle,
+              filter: arg.value,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    imgStyle: updatingImgStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.type == "silver") {
+            setupdatingImgStyle((prevStyle) => ({
+              ...prevStyle,
+              filter: arg.value,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    imgStyle: updatingImgStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.type == "vivid") {
+            setupdatingImgStyle((prevStyle) => ({
+              ...prevStyle,
+              filter: arg.value,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    imgStyle: updatingImgStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.type == "dramatic") {
+            setupdatingImgStyle((prevStyle) => ({
+              ...prevStyle,
+              filter: arg.value,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    imgStyle: updatingImgStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else {
+            setupdatingImgStyle((prevStyle) => ({
+              ...prevStyle,
+              filter: arg.value,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    imgStyle: updatingImgStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          }
+        } else {
+          if (arg.type == "original") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  imgStyle: {
+                    ...item.imgStyle,
+                    filter: arg.value,
+                  },
+                };
+              });
+            });
+          } else if (arg.type == "silver") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  imgStyle: {
+                    ...item.imgStyle,
+                    filter: arg.value,
+                  },
+                };
+              });
+            });
+          } else if (arg.type == "vivid") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  imgStyle: {
+                    ...item.imgStyle,
+                    filter: arg.value,
+                  },
+                };
+              });
+            });
+          } else if (arg.type == "dramatic") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  imgStyle: {
+                    ...item.imgStyle,
+                    filter: arg.value,
+                  },
+                };
+              });
+            });
+          } else {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  imgStyle: {
+                    ...item.imgStyle,
+                    filter: arg.value,
+                  },
+                };
+              });
+            });
+          }
+        }
+      });
+    };
+    return (
+      <>
+        <div className="my-3">
+          {frameEffect.map((item) => (
+            <button
+              className="btn btn-dark mx-2 my-1"
+              onClick={() => handleFrameEffect(item)}
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  };
+  // ************** Mat Sizes
+  const MatSizes = ({ updating }) => {
+    const handleMatSizes = (arg) => {
+      allStyle.map((item, i) => {
+        if (updating) {
+          if (arg.name == "Mat 1") {
+            setupdateingInnerDivStyle((prevStyle) => ({
+              ...prevStyle,
+              transform: `scale(${arg.size})`,
+
+              // transform: `translate(${position.x}px, ${position.y}px) scale(${arg.size})`,
+              // transition: isDragging ? "none" : "transform 0.3s",
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    innerDivStyle: updateingInnerDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.name == "Mat 2") {
+            setupdateingInnerDivStyle((prevStyle) => ({
+              ...prevStyle,
+              transform: `scale(${arg.size})`,
+              // transform: `translate(${position.x}px, ${position.y}px) scale(${arg.size})`,
+              // transition: isDragging ? "none" : "transform 0.3s",
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    innerDivStyle: updateingInnerDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.name == "Mat 3") {
+            setupdateingInnerDivStyle((prevStyle) => ({
+              ...prevStyle,
+              transform: `scale(${arg.size})`,
+              // transform: `translate(${position.x}px, ${position.y}px) scale(${arg.size})`,
+              // transition: isDragging ? "none" : "transform 0.3s",
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    innerDivStyle: updateingInnerDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.name == "Mat 4") {
+            setupdateingInnerDivStyle((prevStyle) => ({
+              ...prevStyle,
+              transform: `scale(${arg.size})`,
+              // transform: `translate(${position.x}px, ${position.y}px) scale(${arg.size})`,
+              // transition: isDragging ? "none" : "transform 0.3s",
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    innerDivStyle: updateingInnerDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else {
+            setupdateingInnerDivStyle((prevStyle) => ({
+              ...prevStyle,
+              transform: `scale(${arg.size})`,
+              // transform: `translate(${position.x}px, ${position.y}px) scale(${arg.size})`,
+              // transition: isDragging ? "none" : "transform 0.3s",
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    innerDivStyle: updateingInnerDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          }
+        } else {
+          if (arg.name == "Mat 1") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  innerDivStyle: {
+                    ...item.innerDivStyle,
+                    transform: `scale(${arg.size})`,
+                  },
+                };
+              });
+            });
+          } else if (arg.name == "Mat 2") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  innerDivStyle: {
+                    ...item.innerDivStyle,
+                    transform: `scale(${arg.size})`,
+                  },
+                };
+              });
+            });
+          } else if (arg.name == "Mat 3") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  innerDivStyle: {
+                    ...item.innerDivStyle,
+                    transform: `scale(${arg.size})`,
+                    // padding: `40px`,
+                  },
+                };
+              });
+            });
+          } else if (arg.name == "Mat 4") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  innerDivStyle: {
+                    ...item.innerDivStyle,
+                    transform: `scale(${arg.size})`,
+                  },
+                };
+              });
+            });
+          } else {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  innerDivStyle: {
+                    ...item.innerDivStyle,
+                    transform: `scale(${arg.size})`,
+                  },
+                };
+              });
+            });
+          }
+        }
+      });
+    };
+    return (
+      <>
+        <div className="my-3">
+          {frameMat.map((item) => (
+            <button
+              className="btn btn-dark mx-2 my-1"
+              onClick={() => handleMatSizes(item)}
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  };
+  // ********** Main Div's BackgroundColor
+  const Colors = ({ updating }) => {
+    const handleFrameBgColors = (arg) => {
+      allStyle.map((item, i) => {
+        if (updating) {
+          if (arg.name == "Color 1") {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              backgroundColor: arg.color,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.name == "Color 2") {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              backgroundColor: arg.color,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.name == "Color 3") {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              backgroundColor: "black",
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else if (arg.name == "Color 4") {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              backgroundColor: arg.color,
+            }));
+
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          } else {
+            setupdatingDivStyle((prevStyle) => ({
+              ...prevStyle,
+              backgroundColor: arg.color,
+            }));
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                if (index === updatingDataId) {
+                  return {
+                    ...item,
+                    divStyle: updatingDivStyle,
+                  };
+                }
+                return item;
+              });
+            });
+          }
+        } else {
+          if (arg.name == "Color 1") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    backgroundColor: arg.color,
+                  },
+                };
+              });
+            });
+          } else if (arg.name == "Color 2") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                //   if (index === 0) {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    backgroundColor: arg.color,
+                  },
+                };
+              });
+            });
+          } else if (arg.name == "Color 3") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                //   if (index === 0) {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    backgroundColor: arg.color,
+                  },
+                };
+              });
+            });
+          } else if (arg.name == "Color 4") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                //   if (index === 0) {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    backgroundColor: arg.color,
+                  },
+                };
+              });
+            });
+          } else if (arg.name == "Color 5") {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                //   if (index === 0) {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    backgroundColor: arg.color,
+                  },
+                };
+              });
+            });
+          } else {
+            setallStyle((prevAnir) => {
+              return prevAnir.map((item, index) => {
+                return {
+                  ...item,
+                  divStyle: {
+                    ...item.divStyle,
+                    border: `red`,
+                  },
+                };
+              });
+            });
+          }
+        }
+      });
+    };
+    return (
+      <>
+        <div className="my-3">
+          {frameBgColor.map((item, i) => (
+            <button
+              key={i}
+              className="btn btn-dark mx-2 my-1"
+              onClick={() => handleFrameBgColors(item)}
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  };
+  // ********** handleUpdateChange
+
+  const handleUpdateChange = () => {
+    // setallStyle((prevAnir) => {
+    //     return prevAnir.map((item, index) => {
+    //       if (index === id) {
+    //         return {
+    //           ...item,
+    //           divStyle: croppingDivStyle
+    //         };
+    //       }
+    //       return item;
+    //     });
+    //   });
+  };
+  // ********** handleDeleteChange
+
+  const handleDeleteChange = () => {
+    const newData = allStyle.filter((item, index) => updatingDataId !== index);
+    const newDataImg = selectedImage.filter(
+      (item, index) => updatingDataId !== index
+    );
+    setallStyle(newData);
+    setSelectedImage(newDataImg);
+    setupdatingDataId(null);
+  };
+
+  // ************* Img (Zooming/Cropping) Part
+
+  const handleZooming = (e) => {
+    setZoomLevel(e?.target.value);
+    allStyle.map((item, i) => {
+      if (true) {
+        setupdatingImgStyle((prevStyle) => ({
+          ...prevStyle,
+          transform: `translate(0px, 0px) rotate(0deg) scale(${zoomLevel})`,
+          // transform: `translate(0px, 0px) rotate(0deg) scale(2.1)`,
+        }));
+
+        setallStyle((prevAnir) => {
+          return prevAnir.map((item, index) => {
+            if (index === updatingDataId) {
+              return {
+                ...item,
+                imgStyle: updatingImgStyle,
+              };
+            }
+            return item;
+          });
+        });
+      }
+    });
+  };
+
+  // *********** effects for updating
+
+  useEffect(() => {
+    console.log("allStyle", allStyle);
+  }, [allStyle]);
+  // ************** Dragging
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      const newX = Math.min(
+        Math.max(position.x + e.movementX, -100), // Adjust for the image's dimensions
+        100
+      );
+      const newY = Math.min(
+        Math.max(position.y + e.movementY, -100), // Adjust for the image's dimensions
+        100
+      );
+      setPosition({ x: newX, y: newY });
+    }
+
+    // **************
+
+    setupdatingImgStyle((prevStyle) => ({
+      ...prevStyle,
+      // transform: `scale(${arg.size})`,
+      transform: `translate(${position.x}px, ${position.y}px) scale(${zoomLevel}) `,
+      transition: isDragging ? "none" : "transform 0.3s",
+    }));
+
+    setallStyle((prevAnir) => {
+      return prevAnir.map((item, index) => {
+        if (index === updatingDataId) {
+          return {
+            ...item,
+            imgStyle: updatingImgStyle,
+          };
+        }
+        return item;
+      });
+    });
+  };
+
+  useEffect(() => {
+    console.log("position,isDragging", position, isDragging);
+    console.log(allStyle);
+  }, [position, isDragging]);
+
+  return (
+    <div>
+      <div className="container mt-5">
+        <div className="row">
+          <div className="col-sm-6 offset-1">
+            {allStyle.map((item, i) => (
+              <div
+                key={i}
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                className="my-5"
+                onClick={() => setupdatingDataId(i)}
+                style={item.divStyle}
+              >
+                <div style={item.innerDivStyle}>
+                  <img src={selectedImage[i]} style={item.imgStyle} alt="IMG" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <Buttons updating={false} />
+        </div>
+      </div>
+      {/* ****Model window */}
+      <div
+        class="modal"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Modal title
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div className="row">
+                <div className="col-sm-6">
+                  {/* {croppingData} */}
+                  <div
+                    class="btn btn-primary"
+                    // data-bs-toggle="modal"
+                    // data-bs-target="#exampleModal"
+                    className="my-5"
+                    style={allStyle[updatingDataId]?.divStyle}
+                  >
+                    <div
+                      className="anii"
+                      style={allStyle[updatingDataId]?.innerDivStyle}
+                      onMouseDown={handleMouseDown}
+                      onMouseUp={handleMouseUp}
+                      onMouseMove={handleMouseMove}
+                    >
+                      <img
+                        src={selectedImage[updatingDataId]}
+                        style={allStyle[updatingDataId]?.imgStyle}
+                        alt="Anir"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <Buttons updating={true} />
+                <br />
+                <div className="my-3">
+                  <div>
+                    <input
+                      type="range"
+                      min={zoomingMinValue}
+                      max={zoomingMaxValue}
+                      step={zoomingstepValue}
+                      value={zoomLevel}
+                      onChange={handleZooming}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                onClick={() => handleDeleteChange(updatingDataId)}
+              >
+                Delete
+              </button>
+              <button
+                onClick={handleUpdateChange}
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

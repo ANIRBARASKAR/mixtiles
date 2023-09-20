@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>3D CSS Photo Frame Effect</title>
+    <style type="text/css">
+      body {
+        background-color: #f0f0f0;
+      }
+
+      .photo-frame img {
+        width: 400px;
+        height: 300px;
+      }
+
+      .photo-frame {
+        background-color: #fefefe;
+        width: 400px;
+        height: 300px;
+        /* padding: 20px; */
+        box-shadow: 1px 1px 1px 0px #999, 2px 2px 1px 0px #888,
+          3px 3px 1px 0px #777, 4px 4px 1px 0px #666, 5px 5px 1px 0px #555,
+          6px 6px 1px 0px #444, 7px 7px 1px 0px #333, 8px 8px 3px 0px #303030;
+        -moz-box-shadow: 1px 1px 1px 0px #999, 2px 2px 1px 0px #888,
+          3px 3px 1px 0px #777, 4px 4px 1px 0px #666, 5px 5px 1px 0px #555,
+          6px 6px 1px 0px #444, 7px 7px 1px 0px #333, 8px 8px 3px 0px #303030;
+        -webkit-box-shadow: 1px 1px 1px 0px #999, 2px 2px 1px 0px #888,
+          3px 3px 1px 0px #777, 4px 4px 1px 0px #666, 5px 5px 1px 0px #555,
+          6px 6px 1px 0px #444, 7px 7px 1px 0px #333, 8px 8px 3px 0px #303030;
+        transform: translate(-8px, -8px);
+        -ms-transform: translate(-8px, -8px);
+        -moz-transform: translate(-8px, -8px);
+        -webkit-transform: translate(-8px, -8px);
+        -o-transform: translate(-8px, -8px);
+        transition: all 0.5s ease 0s;
+        -ms-transition: all 0.5s ease 0s;
+        -moz-transition: all 0.5s ease 0s;
+        -webkit-transition: all 0.5s ease 0s;
+        -o-transition: all 0.5s ease 0s;
+      }
+
+     
+    </style>
+  </head>
+
+  <body>
+    <div class="photo-frame">
+      <img
+        src="https://images.unsplash.com/photo-1693070739008-c3b048f1f976?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMjd8fHxlbnwwfHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
+      />
+    </div>
+  </body>
+</html>
+

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        body{
+            box-sizing: border-box;
+            margin: 300px;
+        }
+        .hello{
+        /* clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%);    clip-path: polygon(50% 0%, 0% 100%, 100% 100%); */
+        /* clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%); */
+        clip-path: circle(50% at 50% 50%);
+
+        }
+      .main {
+        display: flex;
+        margin: 10px;
+        gap: 10px;
+      }
+
+      .box1 {
+        width: 50%;
+      }
+
+      .box2 {
+        background-color: red;
+
+        width: 50%;
+        border: 4px solid rgb(37, 3, 9);
+      }
+
+      .image1 {
+        background-color: green;
+        height: 300px;
+      }
+
+      .image2 {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .imagedown2 {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .tiger1 {
+        background-color: rgb(20, 223, 237);
+        width: 50%;
+        height: 300px;
+        /* transform: rotate(20deg) ; */
+
+      }
+
+      .tiger2 {
+        background-color: yellow;
+        width: 50%;
+        clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="hello">
+    <div class="main">
+      <div class="box1">
+        <div class="image1">
+          <img src="" alt="" />
+        </div>
+        <div class="image2">
+          <div class="tiger1">d</div>
+          <div class="tiger2">d</div>
+        </div>
+      </div>
+      
+      <div  class="box2">
+        <img src="    https://images.unsplash.com/photo-1694424045049-b858e566c21a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMzJ8fHxlbnwwfHx8fHw%3D&auto=format&fit=crop&w=500&q=60L
+        " alt="" />
+      </div>
+    </div>
+    <div class="main">
+      <div class="box2">
+        <img src="" alt="" />
+      </div>
+      <div class="box1">
+        <div class="imagedown2">
+          <div class="tiger1">d</div>
+          <div class="tiger2">d</div>
+        </div>
+        <div class="image1">
+          <img src="" alt="" />
+        </div>
+      </div>
+    </div>
+  </div>
+  </body>
+</html>

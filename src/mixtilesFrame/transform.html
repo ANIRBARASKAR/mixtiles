@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <img
+        id="image"
+        src="https://images.unsplash.com/photo-1693070739008-c3b048f1f976?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxMjd8fHxlbnwwfHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
+        alt="Your Image"
+      />
+      <button onclick="scaleImage(1.0)">Scale 1.0 </button>
+      <button onclick="scaleImage(0.8)">Scale 0.8 </button>
+      <button onclick="scaleImage(0.6)">Scale 0.6 </button>
+      <button onclick="scaleImage(0.4)">Scale 0.4 </button>
+      <button onclick="scaleImage(0.2)">Scale 0.2 </button>
+    </div>
+
+    <script>
+      function scaleImage(scaleFactor) {
+        var image = document.getElementById("image");
+        image.style.transform = "scale(" + scaleFactor + ")";
+      }
+    </script>
+  </body>
+</html>
